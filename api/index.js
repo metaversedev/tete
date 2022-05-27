@@ -1,5 +1,5 @@
 const express = require('express')
-const axios = require('axios');
+//const axios = require('axios');
 const app = express()
 const products = require('../data.js')
 app.use(express.json())
@@ -8,11 +8,11 @@ app.listen(3000, () => {
     console.log('server is listening on port 5000')
 })
 
-async function getMetadata() {
-    let link = "https://kedvic.com/traits.json"
-    let metadata = await axios.get(link);
-    return metadata.data;
-  }
+// async function getMetadata() {
+//     let link = "https://kedvic.com/traits.json"
+//     let metadata = await axios.get(link);
+//     return metadata.data;
+//   }
 
 app.get('/api/products', async (req, res) => {
    // let data = await getMetadata();
