@@ -15,9 +15,9 @@ async function getMetadata() {
   }
 
 app.get('/api/products', async (req, res) => {
-    let data = await getMetadata();
-    res.json(data)
-    //res.json(products)
+   // let data = await getMetadata();
+    //res.json(data)
+    res.json(products)
 })
 
 app.get('/api/products', (req, res) => {
