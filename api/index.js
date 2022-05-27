@@ -1,24 +1,42 @@
 const express = require('express')
-//const axios = require('axios');
+const axios = require('axios');
+const {MerkleTree} = require("merkletreejs")
+const keccak256 = require("keccak256")
+const { ethers , utils } = require("ethers");
+
 const app = express()
 const products = require('../data.js')
 app.use(express.json())
 
+
+let rootHash;
 app.listen(3000, () => {
     console.log('server is listening on port 5000')
 })
 
-// async function getMetadata() {
-//     let link = "https://kedvic.com/traits.json"
-//     let metadata = await axios.get(link);
-//     return metadata.data;
-//   }
+async function getMetadata() {
+    let link = "https://kedvic.com/array.txt"
+    let metadata = await axios.get(link);
+    return metadata.data;
+  }
 
-app.get('/api/products', async (req, res) => {
-   // let data = await getMetadata();
-    //res.json(data)
-    res.json(products)
+app.post('/api/merkleproof', async (req, res) => {
+   let addresses = await getMetadata();
+     // Hash addresses to get the leaves
+    let leaves = addresses.map(addr => keccak256(addr))
+    // Create tree
+    let merkleTree = new MerkleTree(leaves, keccak256, {sortPairs: true})
+    // Get root
+    rootHash = merkleTree.getRoot().toString('hex')
+    console.log("Root hash: ", rootHash)
+    //Get proof
+    let address = req.body.address
+    let hashedAddress = keccak256(address)
+    let proof = merkleTree.getHexProof(hashedAddress)
+    console.log("Proof : ", proof)
+    res.json(proof)
 })
+
 
 app.get('/api/products', (req, res) => {
     const partial_products = products.map(product => {
