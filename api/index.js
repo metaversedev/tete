@@ -14,14 +14,14 @@ app.listen(3000, () => {
     console.log('server is listening on port 5000')
 })
 
-async function getMetadata() {
-    let link = "https://kedvic.com/array.txt"
+async function getMetadata(link) {
     let metadata = await axios.get(link);
     return metadata.data;
   }
 
 app.post('/api/merkleproof', async (req, res) => {
-   let addresses = await getMetadata();
+    let link = "https://kedvic.com/array.txt"
+    let addresses = await getMetadata(link);
      // Hash addresses to get the leaves
     let leaves = addresses.map(addr => keccak256(addr))
     // Create tree
@@ -38,11 +38,18 @@ app.post('/api/merkleproof', async (req, res) => {
 })
 
 
-app.get('/api/products', (req, res) => {
-    const partial_products = products.map(product => {
-        return { id: product.id, name: product.name }
-    })
-    res.json(partial_products)
+app.get('/api/nft', async (req, res) => {
+    let link = "https://kedvic.com/new.json"
+    console.log("getting data")
+    let data = await getMetadata(link);
+    for (let i = 0; i < 5; i++){
+        console.log(data[i])
+    }
+    // const partial_products = products.map(product => {
+    //     return { id: product.id, name: product.name }
+    // })
+    
+    res.json(data[1])
 })
 
 app.get('/api/products/:productID', (req, res) => {
