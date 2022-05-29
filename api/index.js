@@ -3,6 +3,11 @@ const axios = require('axios');
 const {MerkleTree} = require("merkletreejs")
 const keccak256 = require("keccak256")
 const { ethers , utils } = require("ethers");
+const contractABI = require("./DigitalDash.json");
+const contractAddress = "0x71d77eff00FF766f923d2C095C89e6C34aa7D17B"
+const rpc =  "https://rinkeby.infura.io/v3/da220ac7e5a945a69f15174a66aeea4a"
+const ethersProvider = new ethers.providers.JsonRpcProvider(rpc)
+let nft;
 
 const app = express()
 const products = require('../data.js')
@@ -39,16 +44,22 @@ app.post('/api/merkleproof', async (req, res) => {
 
 
 app.get('/api/:id', async (req, res) => {
+    nft = new ethers.Contract(
+        contractAddress,
+        contractABI.abi,
+        ethersProvider
+      )
     let link = "https://kedvic.com/new.json"
     console.log("getting data")
     let data = await getMetadata(link);
     // for (let i = 0; i < 5; i++){
     //     console.log(data[i])
     // }
-
+    const currentSupply = await nft.currentTotal()
+    console.log(currentSupply)    
     const query = req.params.id
     const id = parseInt(query)
-    if(id > 0 && id <= 2){
+    if(id > 0 && id <= currentSupply){
         res.json(data[id])
     }else{
         res.status(404).send("The Miller you requested is out of range")
