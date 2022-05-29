@@ -38,18 +38,21 @@ app.post('/api/merkleproof', async (req, res) => {
 })
 
 
-app.get('/api/nft', async (req, res) => {
+app.get('/api/:id', async (req, res) => {
     let link = "https://kedvic.com/new.json"
     console.log("getting data")
     let data = await getMetadata(link);
-    for (let i = 0; i < 5; i++){
-        console.log(data[i])
+    // for (let i = 0; i < 5; i++){
+    //     console.log(data[i])
+    // }
+
+    const query = req.params.id
+    const id = parseInt(query)
+    if(id > 0 && id <= 2){
+        res.json(data[id])
+    }else{
+        res.status(404).send("The Miller you requested is out of range")
     }
-    // const partial_products = products.map(product => {
-    //     return { id: product.id, name: product.name }
-    // })
-    
-    res.json(data[1])
 })
 
 app.get('/api/products/:productID', (req, res) => {
