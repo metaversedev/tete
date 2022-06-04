@@ -6,12 +6,16 @@ const { ethers , utils } = require("ethers");
 const contractABI = require("./DigitalDash.json");
 const contractAddress = "0x71d77eff00FF766f923d2C095C89e6C34aa7D17B"
 const rpc =  "https://rinkeby.infura.io/v3/da220ac7e5a945a69f15174a66aeea4a"
+const cors = require('cors');
+
 const ethersProvider = new ethers.providers.JsonRpcProvider(rpc)
 let nft;
 
 const app = express()
 const products = require('../data.js')
 app.use(express.json())
+
+app.use(cors());
 
 
 let rootHash;
@@ -24,7 +28,7 @@ async function getMetadata(link) {
     return metadata.data;
   }
 
-app.post('/api/merkleproof', async (req, res) => {
+app.post('/api/mintmerkleproof', async (req, res) => {
     let link = "https://kedvic.com/array.txt"
     let addresses = await getMetadata(link);
      // Hash addresses to get the leaves
@@ -66,14 +70,23 @@ app.get('/api/:id', async (req, res) => {
     }
 })
 
-app.get('/api/products/:productID', (req, res) => {
-    const id = Number(req.params.productID)
-    const product = products.find(product => product.id === id)
-
-        if (!product) {
-        return res.status(404).send('Product not found')
-    }
-    res.json(product)
+app.post('/api/stakemerkleproof', async (req, res) => {
+    let link = "https://kedvic.com/merkle.json"
+    let NFTids = await getMetadata(link);
+     // Hash addresses to get the leaves
+    let leaves = NFTids.map(id => keccak256(id))
+    // Create tree
+    let merkleTree = new MerkleTree(leaves, keccak256, {sortPairs: true})
+    // Get root
+    rootHash = merkleTree.getRoot().toString('hex')
+    console.log("Root hash: ", rootHash)
+    //Get proof
+    let data = req.body.data
+    console.log(data)
+    let hashedData = keccak256(data)
+    let proof = merkleTree.getHexProof(hashedData)
+    console.log("Proof : ", proof)
+    res.json(proof)
 })
 
 app.get('/api/query', (req, res) => {
