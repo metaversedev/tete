@@ -31,14 +31,10 @@ async function getMetadata(link) {
 app.post('/api/mintmerkleproof', async (req, res) => {
     let link = "https://kedvic.com/array.txt"
     let addresses = await getMetadata(link);
-     // Hash addresses to get the leaves
     let leaves = addresses.map(addr => keccak256(addr))
-    // Create tree
     let merkleTree = new MerkleTree(leaves, keccak256, {sortPairs: true})
-    // Get root
     rootHash = merkleTree.getRoot().toString('hex')
     console.log("Root hash: ", rootHash)
-    //Get proof
     let address = req.body.address
     let hashedAddress = keccak256(address)
     let proof = merkleTree.getHexProof(hashedAddress)
@@ -53,7 +49,7 @@ app.get('/api/:id', async (req, res) => {
         contractABI.abi,
         ethersProvider
       )
-    let link = "https://kedvic.com/new.json"
+    let link = "https://millerprotocol.000webhostapp.com/new.json"
     console.log("getting data")
     let data = await getMetadata(link);
     // for (let i = 0; i < 5; i++){
@@ -73,14 +69,10 @@ app.get('/api/:id', async (req, res) => {
 app.post('/api/stakemerkleproof', async (req, res) => {
     let link = "https://kedvic.com/merkle.json"
     let NFTids = await getMetadata(link);
-     // Hash addresses to get the leaves
     let leaves = NFTids.map(id => keccak256(id))
-    // Create tree
     let merkleTree = new MerkleTree(leaves, keccak256, {sortPairs: true})
-    // Get root
     rootHash = merkleTree.getRoot().toString('hex')
     console.log("Root hash: ", rootHash)
-    //Get proof
     let data = req.body.data
     console.log(data)
     let hashedData = keccak256(data)
