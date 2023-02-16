@@ -4,7 +4,8 @@ const {MerkleTree} = require("merkletreejs")
 const keccak256 = require("keccak256")
 const { ethers , utils } = require("ethers");
 const contractABI = require("./DigitalDash.json");
-const contractAddress = "0x71d77eff00FF766f923d2C095C89e6C34aa7D17B"
+// const contractAddress = "0x71d77eff00FF766f923d2C095C89e6C34aa7D17B"
+const contractAddress = "0x40443d961c12444F2Ec5f7d07AFB6FA6e07BEdeb"
 const rpc =  "https://rinkeby.infura.io/v3/da220ac7e5a945a69f15174a66aeea4a"
 const cors = require('cors');
 
